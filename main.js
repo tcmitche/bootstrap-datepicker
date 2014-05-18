@@ -32,6 +32,16 @@ function createContainer(x, y) {
     return box;
 }
 
+function localeMonthName(index) {
+    var date = new Date(YEAR, index, 1);
+    return date.toLocaleDateString(undefined, {month: 'short'});
+}
+
+function localeDayName(index) {
+    // This week started on a Sunday, I'm sure there's a better way...
+    var date = new Date(2013, 11, index + 1);
+    return date.toLocaleDateString(undefined, {weekday: 'short'});
+}
 /**
  * Returns the number of days in a given month.
  * @param  {int} month Month indexed by 0.
@@ -106,7 +116,7 @@ function createControls() {
     container.className = 'btn-group btn-group-justified controls';
     var prev = wrappedButton('<');
     var year = wrappedButton(YEAR);
-    var month = wrappedButton(MONTH);
+    var month = wrappedButton(localeMonthName(MONTH));
     var next = wrappedButton('>');
     prev.onclick = previousMonth;
     next.onclick = nextMonth;
@@ -117,12 +127,22 @@ function createControls() {
     return container;
 }
 
+function createWeekdays() {
+    var container = div();
+    container.className = 'btn-group btn-group-justified weekdays';
+    for (var i = 0; i < 7; i++) {
+        var day = localeDayName(i);
+        container.appendChild(wrappedButton(localeDayName(i)));
+    }
+    return container;
+}
+
 function renderCalendar() {
     BOX.innerHTML = '';
-    var controls = createControls();
     var buttons = renderDateButtons(YEAR, MONTH);
     var week = div();
-    BOX.appendChild(controls);
+    BOX.appendChild(createControls());
+    BOX.appendChild(createWeekdays());
     for (var i = 1; i <= buttons.length; i++) {
         week.appendChild(buttons[i - 1]);
         if (i % 7 === 0 || i === buttons.length) {
